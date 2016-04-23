@@ -1,4 +1,3 @@
-let Howhap = require('howhap');
 let ErrorDisplayer = require('./error-displayer');
 require('whatwg-fetch');
 

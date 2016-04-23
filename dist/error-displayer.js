@@ -4,6 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var Howhap = require('howhap');
 module.exports = function () {
 	function ErrorDisplayer(err) {
 		_classCallCheck(this, ErrorDisplayer);

@@ -1,6 +1,5 @@
 'use strict';
 
-var Howhap = require('howhap');
 var ErrorDisplayer = require('./error-displayer');
 require('whatwg-fetch');
 

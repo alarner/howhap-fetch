@@ -1,6 +1,6 @@
 'use strict';
 
-var ErrorDisplayer = require('./error-displayer');
+var HowhapList = require('howhap-list');
 require('whatwg-fetch');
 
 function makeJson(res) {
@@ -11,7 +11,7 @@ function makeJson(res) {
 
 function processResult(data) {
 	if (data.res.status >= 400) {
-		throw new ErrorDisplayer(data.json);
+		throw new HowhapList(data.json);
 	}
 	return data.json;
 }

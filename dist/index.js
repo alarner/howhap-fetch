@@ -57,5 +57,8 @@ module.exports = {
 			headers: headers,
 			body: JSON.stringify(params || {})
 		}).then(makeJson).then(processResult);
+	},
+	setGlobalHeaders: function setGlobalHeaders(newHeaders) {
+		headers = Object.assign(headers, newHeaders);
 	}
 };

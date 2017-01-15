@@ -15,7 +15,7 @@ function processResult(data) {
 	return data.json;
 }
 
-const headers = {
+let headers = {
 	'Accept': 'application/json',
 	'Content-Type': 'application/json'
 };
@@ -64,5 +64,8 @@ module.exports = {
 		})
 		.then(makeJson)
 		.then(processResult);
+	},
+	setGlobalHeaders: function(newHeaders) {
+		headers = Object.assign(headers, newHeaders);
 	}
 };

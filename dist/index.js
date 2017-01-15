@@ -60,5 +60,8 @@ module.exports = {
 	},
 	setGlobalHeaders: function setGlobalHeaders(newHeaders) {
 		headers = Object.assign(headers, newHeaders);
+	},
+	deleteGlobalHeader: function deleteGlobalHeader(key) {
+		delete headers[key];
 	}
 };

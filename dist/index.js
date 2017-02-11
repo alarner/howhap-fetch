@@ -1,13 +1,26 @@
 let HowhapList = require('howhap-list');
 require('whatwg-fetch');
 
+let debug = false;
+
+let headers = {
+	'Accept': 'application/json',
+	'Content-Type': 'application/json'
+};
+
 function makeJson(res) {
+	if (debug) {
+		console.log('makeJson', res);
+	}
 	return res.json().then(json => {
 		return { res: res, json: json };
 	});
 }
 
 function processResult(data) {
+	if (debug) {
+		console.log('processResult', data);
+	}
 	if (data.res.status >= 400) {
 		throw new HowhapList(data.json);
 	}
@@ -15,13 +28,11 @@ function processResult(data) {
 }
 
 function processError(err) {
+	if (debug) {
+		console.log('processError', err);
+	}
 	throw new HowhapList({ network: { message: err.toString(), status: 400 } });
 }
-
-let headers = {
-	'Accept': 'application/json',
-	'Content-Type': 'application/json'
-};
 
 module.exports = {
 	get: function (url, params) {
@@ -65,5 +76,8 @@ module.exports = {
 	},
 	deleteGlobalHeader: function (key) {
 		delete headers[key];
+	},
+	setDebug: function (val) {
+		debug = val;
 	}
 };

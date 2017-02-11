@@ -15,6 +15,10 @@ function processResult(data) {
 	return data.json;
 }
 
+function processError(err) {
+	throw new HowhapList({ network: { message: err.toString(), status: 400 } });
+}
+
 let headers = {
 	'Accept': 'application/json',
 	'Content-Type': 'application/json'
@@ -33,7 +37,8 @@ module.exports = {
 			headers: headers
 		})
 		.then(makeJson)
-		.then(processResult);
+		.then(processResult)
+		.catch(processError);
 	},
 	put: function(url, params) {
 		return fetch(url, {
@@ -43,7 +48,8 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		})
 		.then(makeJson)
-		.then(processResult);
+		.then(processResult)
+		.catch(processError);
 	},
 	post: function(url, params) {
 		return fetch(url, {
@@ -53,7 +59,8 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		})
 		.then(makeJson)
-		.then(processResult);
+		.then(processResult)
+		.catch(processError);
 	},
 	delete: function(url, params) {
 		return fetch(url, {
@@ -63,7 +70,8 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		})
 		.then(makeJson)
-		.then(processResult);
+		.then(processResult)
+		.catch(processError);
 	},
 	setGlobalHeaders: function(newHeaders) {
 		headers = Object.assign(headers, newHeaders);

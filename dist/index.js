@@ -1,10 +1,8 @@
-'use strict';
-
-var HowhapList = require('howhap-list');
+let HowhapList = require('howhap-list');
 require('whatwg-fetch');
 
 function makeJson(res) {
-	return res.json().then(function (json) {
+	return res.json().then(json => {
 		return { res: res, json: json };
 	});
 }
@@ -16,15 +14,19 @@ function processResult(data) {
 	return data.json;
 }
 
-var headers = {
+function processError(err) {
+	throw new HowhapList({ network: { message: err.toString(), status: 400 } });
+}
+
+let headers = {
 	'Accept': 'application/json',
 	'Content-Type': 'application/json'
 };
 
 module.exports = {
-	get: function get(url, params) {
+	get: function (url, params) {
 		url += '?';
-		for (var i in params) {
+		for (let i in params) {
 			url += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&';
 		}
 		url = url.slice(0, -1);
@@ -32,36 +34,36 @@ module.exports = {
 			credentials: 'same-origin',
 			method: 'get',
 			headers: headers
-		}).then(makeJson).then(processResult);
+		}).then(makeJson).then(processResult).catch(processError);
 	},
-	put: function put(url, params) {
+	put: function (url, params) {
 		return fetch(url, {
 			credentials: 'same-origin',
 			method: 'put',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult);
+		}).then(makeJson).then(processResult).catch(processError);
 	},
-	post: function post(url, params) {
+	post: function (url, params) {
 		return fetch(url, {
 			credentials: 'same-origin',
 			method: 'post',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult);
+		}).then(makeJson).then(processResult).catch(processError);
 	},
-	delete: function _delete(url, params) {
+	delete: function (url, params) {
 		return fetch(url, {
 			credentials: 'same-origin',
 			method: 'delete',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult);
+		}).then(makeJson).then(processResult).catch(processError);
 	},
-	setGlobalHeaders: function setGlobalHeaders(newHeaders) {
+	setGlobalHeaders: function (newHeaders) {
 		headers = Object.assign(headers, newHeaders);
 	},
-	deleteGlobalHeader: function deleteGlobalHeader(key) {
+	deleteGlobalHeader: function (key) {
 		delete headers[key];
 	}
 };

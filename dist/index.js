@@ -43,7 +43,7 @@ function customFetch(url, options) {
 	if (debug) {
 		console.log('customFetch', url, options);
 	}
-	return fetch(url, options).then(makeJson).then(processResult).catch(processError);
+	return fetch(url, options).then(makeJson).catch(processError).then(processResult);
 }
 
 module.exports = {

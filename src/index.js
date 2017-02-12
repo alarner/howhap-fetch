@@ -46,8 +46,8 @@ function customFetch(url, options) {
 	}
 	return fetch(url, options)
 	.then(makeJson)
-	.then(processResult)
-	.catch(processError);
+	.catch(processError)
+	.then(processResult);
 }
 
 module.exports = {

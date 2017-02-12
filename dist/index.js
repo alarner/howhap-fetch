@@ -13,13 +13,13 @@ function makeJson(res) {
 	if (debug) {
 		debugPromise = res.text().then(text => {
 			console.log('makeJson', res, text);
+			return { res, json: JSON.parse(text) };
 		});
 	}
 
-	const resultPromise = res.json().then(json => {
-		return { res: res, json: json };
+	return debugPromise || res.json().then(json => {
+		return { res, json };
 	});
-	return debugPromise ? debugPromise.then(() => resultPromise) : resultPromise;
 }
 
 function processResult(data) {

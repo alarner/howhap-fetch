@@ -9,12 +9,17 @@ let headers = {
 };
 
 function makeJson(res) {
+	let debugPromise = null;
 	if (debug) {
-		console.log('makeJson', res);
+		debugPromise = res.text().then(text => {
+			console.log('makeJson', res, text);
+		});
 	}
-	return res.json().then(json => {
+
+	const resultPromise = res.json().then(json => {
 		return { res: res, json: json };
 	});
+	return debugPromise ? debugPromise.then(() => resultPromise) : resultPromise;
 }
 
 function processResult(data) {
@@ -34,6 +39,13 @@ function processError(err) {
 	throw new HowhapList({ network: { message: err.toString(), status: 400 } });
 }
 
+function customFetch(url, options) {
+	if (debug) {
+		console.log('customFetch', url, options);
+	}
+	return fetch(url, options).then(makeJson).then(processResult).catch(processError);
+}
+
 module.exports = {
 	get: function (url, params) {
 		url += '?';
@@ -41,35 +53,35 @@ module.exports = {
 			url += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&';
 		}
 		url = url.slice(0, -1);
-		return fetch(url, {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'get',
 			headers: headers
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
 	put: function (url, params) {
-		return fetch(url, {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'put',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
 	post: function (url, params) {
-		return fetch(url, {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'post',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
 	delete: function (url, params) {
-		return fetch(url, {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'delete',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
 	setGlobalHeaders: function (newHeaders) {
 		headers = Object.assign(headers, newHeaders);

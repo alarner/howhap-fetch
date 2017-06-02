@@ -1,24 +1,26 @@
-let HowhapList = require('howhap-list');
+'use strict';
+
+var HowhapList = require('howhap-list');
 require('whatwg-fetch');
 
-let debug = false;
+var debug = false;
 
-let headers = {
+var headers = {
 	'Accept': 'application/json',
 	'Content-Type': 'application/json'
 };
 
 function makeJson(res) {
-	let debugPromise = null;
+	var debugPromise = null;
 	if (debug) {
-		debugPromise = res.text().then(text => {
+		debugPromise = res.text().then(function (text) {
 			console.log('makeJson', res, text);
-			return { res, json: JSON.parse(text) };
+			return { res: res, json: JSON.parse(text) };
 		});
 	}
 
-	return debugPromise || res.json().then(json => {
-		return { res, json };
+	return debugPromise || res.json().then(function (json) {
+		return { res: res, json: json };
 	});
 }
 
@@ -47,9 +49,9 @@ function customFetch(url, options) {
 }
 
 module.exports = {
-	get: function (url, params) {
+	get: function get(url, params) {
 		url += '?';
-		for (let i in params) {
+		for (var i in params) {
 			url += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&';
 		}
 		url = url.slice(0, -1);
@@ -59,7 +61,7 @@ module.exports = {
 			headers: headers
 		});
 	},
-	put: function (url, params) {
+	put: function put(url, params) {
 		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'put',
@@ -67,7 +69,7 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		});
 	},
-	post: function (url, params) {
+	post: function post(url, params) {
 		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'post',
@@ -75,7 +77,7 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		});
 	},
-	delete: function (url, params) {
+	delete: function _delete(url, params) {
 		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'delete',
@@ -83,13 +85,13 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		});
 	},
-	setGlobalHeaders: function (newHeaders) {
+	setGlobalHeaders: function setGlobalHeaders(newHeaders) {
 		headers = Object.assign(headers, newHeaders);
 	},
-	deleteGlobalHeader: function (key) {
+	deleteGlobalHeader: function deleteGlobalHeader(key) {
 		delete headers[key];
 	},
-	setDebug: function (val) {
+	setDebug: function setDebug(val) {
 		debug = val;
 	}
 };

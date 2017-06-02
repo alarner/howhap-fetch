@@ -1,6 +1,6 @@
 {
   "name": "howhap-fetch",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "Promise based AJAX library that supports howhap errors.",
   "main": "dist/index.js",
   "scripts": {

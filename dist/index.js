@@ -1,13 +1,33 @@
-let HowhapList = require('howhap-list');
+'use strict';
+
+var HowhapList = require('howhap-list');
 require('whatwg-fetch');
 
+var debug = false;
+
+var headers = {
+	'Accept': 'application/json',
+	'Content-Type': 'application/json'
+};
+
 function makeJson(res) {
-	return res.json().then(json => {
+	var debugPromise = null;
+	if (debug) {
+		debugPromise = res.text().then(function (text) {
+			console.log('makeJson', res, text);
+			return { res: res, json: JSON.parse(text) };
+		});
+	}
+
+	return debugPromise || res.json().then(function (json) {
 		return { res: res, json: json };
 	});
 }
 
 function processResult(data) {
+	if (debug) {
+		console.log('processResult', data);
+	}
 	if (data.res.status >= 400) {
 		throw new HowhapList(data.json);
 	}
@@ -15,55 +35,63 @@ function processResult(data) {
 }
 
 function processError(err) {
+	if (debug) {
+		console.log('processError', err);
+	}
 	throw new HowhapList({ network: { message: err.toString(), status: 400 } });
 }
 
-let headers = {
-	'Accept': 'application/json',
-	'Content-Type': 'application/json'
-};
+function customFetch(url, options) {
+	if (debug) {
+		console.log('customFetch', url, options);
+	}
+	return fetch(url, options).then(makeJson).catch(processError).then(processResult);
+}
 
 module.exports = {
-	get: function (url, params) {
+	get: function get(url, params) {
 		url += '?';
-		for (let i in params) {
+		for (var i in params) {
 			url += encodeURIComponent(i) + '=' + encodeURIComponent(params[i]) + '&';
 		}
 		url = url.slice(0, -1);
-		return fetch(url, {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'get',
 			headers: headers
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
-	put: function (url, params) {
-		return fetch(url, {
+	put: function put(url, params) {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'put',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
-	post: function (url, params) {
-		return fetch(url, {
+	post: function post(url, params) {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'post',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
-	delete: function (url, params) {
-		return fetch(url, {
+	delete: function _delete(url, params) {
+		return customFetch(url, {
 			credentials: 'same-origin',
 			method: 'delete',
 			headers: headers,
 			body: JSON.stringify(params || {})
-		}).then(makeJson).then(processResult).catch(processError);
+		});
 	},
-	setGlobalHeaders: function (newHeaders) {
+	setGlobalHeaders: function setGlobalHeaders(newHeaders) {
 		headers = Object.assign(headers, newHeaders);
 	},
-	deleteGlobalHeader: function (key) {
+	deleteGlobalHeader: function deleteGlobalHeader(key) {
 		delete headers[key];
+	},
+	setDebug: function setDebug(val) {
+		debug = val;
 	}
 };

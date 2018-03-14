@@ -8,6 +8,8 @@ let headers = {
 	'Content-Type': 'application/json'
 };
 
+let handlers = [];
+
 function makeJson(res) {
 	let debugPromise = null;
 	if(debug) {
@@ -28,6 +30,7 @@ function processResult(data) {
 		console.log('processResult', data);
 	}
 	if(data.res.status >= 400) {
+		handlers.filter(h => h.event === 'error').forEach(h => h.cb(data.json));
 		throw new HowhapList(data.json);
 	}
 	return data.json;
@@ -37,7 +40,9 @@ function processError(err) {
 	if(debug) {
 		console.log('processError', err);
 	}
-	throw new HowhapList({ network: { message: err.toString(), status: 400 } });
+	const error = { network: { message: err.toString(), status: 400 } };
+	handlers.filter(h => h.event === 'error').forEach(h => h.cb(error));
+	throw new HowhapList(error);
 }
 
 function customFetch(url, options) {
@@ -95,5 +100,16 @@ module.exports = {
 	},
 	setDebug: function(val) {
 		debug = val;
+	},
+	on: function(event, cb) {
+		handlers.push({ event, cb });
+	},
+	off: function(event, cb) {
+		if(cb) {
+			handlers = handlers.filter(h => h.event !== event && h.cb !== cb);
+		}
+		else {
+			handlers = handlers.filter(h => h.event !== event);
+		}
 	}
 };

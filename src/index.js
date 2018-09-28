@@ -94,7 +94,7 @@ module.exports = {
 	},
 	raw: function(url, options) {
 		options.credentials = options.credentials || 'same-origin';
-		headers.headers = Object.assign({}, headers, options.headers || {});
+		options.headers = Object.assign({}, headers, options.headers || {});
 		return customFetch(url, options);
 	},
 	setGlobalHeaders: function(newHeaders) {

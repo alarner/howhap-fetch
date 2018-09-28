@@ -98,6 +98,9 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		});
 	},
+	raw: function raw(url, options) {
+		return customFetch(url, options);
+	},
 	setGlobalHeaders: function setGlobalHeaders(newHeaders) {
 		headers = Object.assign(headers, newHeaders);
 	},

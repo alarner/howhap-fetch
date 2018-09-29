@@ -92,9 +92,12 @@ module.exports = {
 			body: JSON.stringify(params || {})
 		});
 	},
-	raw: function(url, options) {
+	raw: function(url, options, deleteContentType) {
 		options.credentials = options.credentials || 'same-origin';
 		options.headers = Object.assign({}, headers, options.headers || {});
+		if(deleteContentType) {
+			delete options.headers['Content-Type'];
+		}
 		return customFetch(url, options);
 	},
 	setGlobalHeaders: function(newHeaders) {
